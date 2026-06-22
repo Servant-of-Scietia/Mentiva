@@ -1,72 +1,63 @@
 <template>
-  <div class="w-full bg-white border-t-2 border-neutral-200 flex justify-around items-center h-full rounded-t-3xl shadow-2xl">
+  <div class="w-full border-t border-slate-800/60 bg-slate-950/80 backdrop-blur-xl flex justify-around items-center h-full rounded-t-3xl shadow-2xl">
+
     <!-- Dashboard -->
     <button
       @click="() => goTo('dashboard')"
-      :class="[
-        'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200',
-        'hover:scale-110 active:scale-95',
-        currentScreen === 'dashboard'
-          ? 'text-amber-500 scale-105'
-          : 'text-neutral-400 hover:text-neutral-600'
-      ]"
-      title="Dashboard"
+      :class="navClass('dashboard')"
     >
       <span class="text-2xl mb-1">🏠</span>
-      <span class="text-xs font-semibold">Dashboard</span>
+      <span class="text-[11px] font-medium">Dashboard</span>
     </button>
 
     <!-- Calendar -->
     <button
       @click="() => goTo('calendar')"
-      :class="[
-        'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200',
-        'hover:scale-110 active:scale-95',
-        currentScreen === 'calendar'
-          ? 'text-amber-500 scale-105'
-          : 'text-neutral-400 hover:text-neutral-600'
-      ]"
-      title="Kalender"
+      :class="navClass('calendar')"
     >
       <span class="text-2xl mb-1">📅</span>
-      <span class="text-xs font-semibold">Kalender</span>
+      <span class="text-[11px] font-medium">Kalender</span>
     </button>
 
-    <!-- Check-in (Central CTA) -->
+    <!-- Check-in -->
     <button
-      @click="() => goTo('checkin')"
-      :class="[
-        'flex flex-col items-center justify-center transition-all duration-200',
-        'w-16 h-16 -mt-8 rounded-full shadow-xl',
-        'hover:scale-110 active:scale-90',
-        'border-4 border-white',
-        currentScreen === 'checkin'
-          ? 'bg-gradient-to-br from-amber-400 to-amber-500 text-white scale-110 shadow-2xl'
-          : 'bg-gradient-to-br from-amber-400 to-amber-500 text-white'
-      ]"
-      title="Check-in"
-    >
-      <span class="text-3xl">➕</span>
-    </button>
+  @click="() => goTo('checkin')"
+  class="
+    flex flex-col items-center justify-center
+    w-16 h-16 -mt-8 rounded-full
+    relative transition
+    hover:scale-110 active:scale-95
+  "
+>
+  <!-- glow layer -->
+  <div class="absolute inset-0 rounded-full bg-amber-400/20 blur-md"></div>
+
+  <!-- main surface -->
+  <div class="
+    absolute inset-0 rounded-full
+    bg-gradient-to-br from-amber-300 to-amber-500
+    border border-amber-200/40
+    shadow-lg
+  "></div>
+
+  <!-- icon layer -->
+  <span class="relative text-slate-950 text-2xl font-black leading-none">
+    +
+  </span>
+</button>
 
     <!-- Trends -->
     <button
       @click="() => goTo('week')"
-      :class="[
-        'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200',
-        'hover:scale-110 active:scale-95',
-        currentScreen === 'week'
-          ? 'text-amber-500 scale-105'
-          : 'text-neutral-400 hover:text-neutral-600'
-      ]"
-      title="Trends"
+      :class="navClass('week')"
     >
       <span class="text-2xl mb-1">📈</span>
-      <span class="text-xs font-semibold">Trends</span>
+      <span class="text-[11px] font-medium">Trends</span>
     </button>
 
-    <!-- Placeholder for symmetry -->
-    <div class="flex-1" />
+    <!-- spacer -->
+    <div class="flex-1"></div>
+
   </div>
 </template>
 
@@ -77,4 +68,17 @@ import { useMentivaDemo } from '../../composables/useMentivaDemo'
 const { state, goTo } = useMentivaDemo()
 
 const currentScreen = computed(() => state.currentScreen)
+
+function navClass(screen: string) {
+  const base =
+    'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200'
+
+  const inactive =
+    'text-slate-500 hover:text-slate-300'
+
+  const active =
+    'text-amber-400 scale-105'
+
+  return `${base} ${currentScreen.value === screen ? active : inactive}`
+}
 </script>

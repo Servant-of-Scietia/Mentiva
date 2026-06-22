@@ -58,6 +58,7 @@ let showSuccessMessage = ref(false)
 export function useMentivaDemo() {
   function goTo(screen: 'dashboard' | 'checkin' | 'week' | 'calendar') {
     state.currentScreen = screen
+    console.log(`Navigating to ${screen} screen`)
   }
 
   function addCheckin(energy: number, sleep: number) {

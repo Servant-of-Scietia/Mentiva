@@ -1,73 +1,70 @@
 <template>
-  <div class="mentiva-card bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-purple-200 p-6 shadow-lg">
-    <div class="flex justify-between items-start mb-4">
-      <div>
-        <p class="text-xs font-bold text-purple-600 uppercase tracking-wide mb-1">🧠 Deine mentale Kapazität</p>
-        <p class="text-sm text-purple-800 font-medium">Energieverlauf heute</p>
-      </div>
+  <div class="rounded-2xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-md p-6 shadow-lg">
+
+    <!-- Header -->
+    <div class="mb-4">
+      <p class="text-xs font-bold text-amber-400 uppercase tracking-wide">
+        🧠 Deine mentale Kapazität
+      </p>
+      <p class="text-sm text-slate-300 font-medium">
+        Energieverlauf heute
+      </p>
     </div>
 
-    <!-- Chart Container -->
+    <!-- Chart -->
     <div class="relative h-32 mt-6 mb-4">
-      <!-- Grid lines -->
+
+      <!-- Grid -->
       <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-        <div class="border-t border-purple-200/50"></div>
-        <div class="border-t border-purple-200/30"></div>
-        <div class="border-t border-purple-200/30"></div>
-        <div class="border-t border-purple-200/50"></div>
+        <div class="border-t border-slate-700/40"></div>
+        <div class="border-t border-slate-700/25"></div>
+        <div class="border-t border-slate-700/25"></div>
+        <div class="border-t border-slate-700/40"></div>
       </div>
 
-      <!-- Y-axis labels -->
-      <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-purple-500 font-semibold -ml-8 w-6 text-right pr-1">
+      <!-- Y axis -->
+      <div class="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-slate-500 font-semibold -ml-8 w-6 text-right pr-1">
         <span>100%</span>
         <span>75%</span>
         <span>50%</span>
         <span>25%</span>
       </div>
 
-      <!-- Chart SVG -->
+      <!-- SVG -->
       <svg class="absolute inset-0 w-full h-full" viewBox="0 0 300 120" preserveAspectRatio="none">
-        <!-- Gradient fill -->
+
         <defs>
           <linearGradient id="capacityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color: #a855f7; stop-opacity: 0.3" />
-            <stop offset="100%" style="stop-color: #ec4899; stop-opacity: 0.05" />
+            <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.25" />
+            <stop offset="100%" stop-color="#0f172a" stop-opacity="0.05" />
           </linearGradient>
         </defs>
 
-        <!-- Path area -->
-        <path
-          :d="pathData"
-          fill="url(#capacityGradient)"
-          stroke="none"
-        />
+        <path :d="pathData" fill="url(#capacityGradient)" />
 
-        <!-- Line -->
         <polyline
           :points="linePoints"
           fill="none"
-          stroke="#a855f7"
+          stroke="#fbbf24"
           stroke-width="2.5"
           stroke-linecap="round"
           stroke-linejoin="round"
-          vector-effect="non-scaling-stroke"
         />
 
-        <!-- Data points -->
         <circle
           v-for="(point, idx) in dataPoints"
-          :key="`point-${idx}`"
+          :key="idx"
           :cx="point.x"
           :cy="point.y"
-          r="1.5"
-          fill="#d946ef"
-          opacity="0.8"
+          r="2"
+          fill="#fbbf24"
+          opacity="0.9"
         />
       </svg>
     </div>
 
-    <!-- X-axis labels -->
-    <div class="flex justify-between text-xs text-purple-500 font-semibold mt-2">
+    <!-- X axis -->
+    <div class="flex justify-between text-xs text-slate-500 font-semibold mt-2">
       <span>08:00</span>
       <span>11:00</span>
       <span>14:00</span>
@@ -75,17 +72,21 @@
       <span>18:00</span>
     </div>
 
-    <!-- Energy zones legend -->
-    <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-purple-200">
+    <!-- Legend -->
+    <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-800/60">
+
       <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-gradient-to-r from-green-400 to-green-500"></div>
-        <p class="text-xs text-purple-700">Hoch: 09-12h, 15-16h</p>
+        <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+        <p class="text-xs text-slate-400">Hoch: 09–12h, 15–16h</p>
       </div>
+
       <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400"></div>
-        <p class="text-xs text-purple-700">Mittel: morgens, abends</p>
+        <div class="w-2 h-2 rounded-full bg-slate-500"></div>
+        <p class="text-xs text-slate-400">Mittel: morgens, abends</p>
       </div>
+
     </div>
+
   </div>
 </template>
 
@@ -111,7 +112,7 @@ const energyData = [
 
 // Calculate SVG path points
 const dataPoints = computed(() => {
-  const points = []
+  const points: { x: number; y: number }[] = []
   const width = 300
   const height = 120
   
@@ -131,7 +132,7 @@ const linePoints = computed(() => {
 
 // Path data for fill area (includes baseline)
 const pathData = computed(() => {
-  const points = dataPoints.value
+  const points: { x: number; y: number }[] = dataPoints.value
   const width = 300
   const height = 120
   
