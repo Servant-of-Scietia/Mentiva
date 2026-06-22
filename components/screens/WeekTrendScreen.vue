@@ -234,46 +234,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMentivaDemo } from '../../composables/useMentivaDemo'
 
-type CurvePoint = {
-  time: string
-  readiness: number
-  label: string
-  zone: string
-  interpretation: string
-}
-
-// Mock forecast data. Replace with model output when backend forecasting exists.
-const readinessCurve: CurvePoint[] = [
-  { time: '06:00', readiness: 42, label: 'Anlaufphase', zone: 'Regeneration', interpretation: 'Der Tag startet mit niedriger kognitiver Aktivierung.' },
-  { time: '07:00', readiness: 54, label: 'Aktivierung', zone: 'Leichte Orientierung', interpretation: 'Mentale Energie steigt, aber komplexe Denkarbeit ist noch nicht optimal.' },
-  { time: '08:00', readiness: 68, label: 'Fokus steigt', zone: 'Solide Ausführung', interpretation: 'Gute Phase für strukturierte Arbeit und Vorbereitung.' },
-  { time: '09:00', readiness: 82, label: 'Peak-Fokus', zone: 'Tiefe Denkarbeit', interpretation: 'Starke Analysefähigkeit und hohe mentale Stabilität.' },
-  { time: '10:00', readiness: 91, label: 'Höchstleistung', zone: 'Tiefe Denkarbeit', interpretation: 'Voraussichtlich stärkster kognitiver Punkt des Tages.' },
-  { time: '11:00', readiness: 87, label: 'Hoher Fokus', zone: 'Tiefe Denkarbeit', interpretation: 'Weiterhin sehr gutes Fenster für komplexes Denken.' },
-  { time: '12:00', readiness: 73, label: 'Leistungsabfall', zone: 'Solide Ausführung', interpretation: 'Die mentale Tiefe nimmt langsam ab, Ausführung bleibt stabil.' },
-  { time: '13:00', readiness: 59, label: 'Mittagstief', zone: 'Routinefähigkeit', interpretation: 'Reduzierte kognitive Tiefe, aber brauchbar für einfache Aufgaben.' },
-  { time: '14:00', readiness: 66, label: 'Erholung', zone: 'Solide Ausführung', interpretation: 'Leichte Stabilisierung nach dem Mittagstief.' },
-  { time: '15:00', readiness: 74, label: 'Zweites Leistungsfenster', zone: 'Fokussierte Ausführung', interpretation: 'Kurzes zweites Fenster für mittelkomplexe Arbeit.' },
-  { time: '16:00', readiness: 65, label: 'Solide Ausführung', zone: 'Routinefähigkeit', interpretation: 'Ausführung bleibt möglich, aber die mentale Tiefe sinkt.' },
-  { time: '17:00', readiness: 54, label: 'Ermüdung', zone: 'Routinefähigkeit', interpretation: 'Ermüdung nimmt zu, neue komplexe Arbeit wird weniger effizient.' },
-  { time: '18:00', readiness: 46, label: 'Niedrige Leistung', zone: 'Regeneration', interpretation: 'Mentale Belastbarkeit ist deutlich reduziert.' },
-  { time: '19:00', readiness: 41, label: 'Regeneration', zone: 'Erholung', interpretation: 'Erholung ist voraussichtlich wertvoller als zusätzliche Arbeitszeit.' },
-  { time: '20:00', readiness: 38, label: 'Erholung', zone: 'Erholung', interpretation: 'Niedrige kognitive Kapazität, gute Phase zum Abschalten.' },
-  { time: '21:00', readiness: 34, label: 'Abschalten', zone: 'Schlafvorbereitung', interpretation: 'Mentiva erwartet sinkende Aktivierung.' },
-  { time: '22:00', readiness: 28, label: 'Schlafvorbereitung', zone: 'Schlafvorbereitung', interpretation: 'Der Tag sollte kognitiv abgeschlossen werden.' }
-]
-
-const forecastSummary = {
-  status: 'Moderate Belastung',
-  peakWindow: '09:20-11:45',
-  secondaryWindow: '14:30-15:40',
-  lowReadinessWindow: '17:30-22:00',
-  confidence: 82,
-  confidenceReason: 'Basierend auf 14 Tagen Signalverlauf und heutigem Check-in.',
-  mainInterpretation: 'Dein stärkstes kognitives Fenster liegt heute am Vormittag. Die Erholungssignale deuten auf gute Spitzenleistung, aber begrenzte Ausdauer über den Tag hin.',
-  coreMessage: 'Zeit ist heute nicht der Engpass. Die knappe Ressource ist stabile kognitive Kapazität.'
-}
+const { forecastCurve: readinessCurve, forecastSummary, weeklyOutlook } = useMentivaDemo()
 
 const curveInfluences = [
   { title: 'Peak-Fokus bleibt stark, aber kürzer', effect: 'Das Vormittagsfenster erreicht hohe Werte, fällt aber früher ab als an erholten Tagen.', impact: 'verkürztes Hochleistungsfenster' },
@@ -297,16 +260,6 @@ const dailyStrategy = [
   { title: 'Stabilisiere die zweite Tageshälfte', text: 'Kurze Erholungsphasen können helfen, das zweite Leistungsfenster nutzbar zu halten.' }
 ]
 
-const weeklyOutlook = [
-  { day: 'Mo', readiness: 64, status: 'Moderate Belastung', note: 'Starker Vormittag, früher Leistungsabfall.' },
-  { day: 'Di', readiness: 69, status: 'Stabilisierung', note: 'Erholung voraussichtlich leicht besser.' },
-  { day: 'Mi', readiness: 76, status: 'Gutes Fokuspotenzial', note: 'Längeres Hochleistungsfenster möglich.' },
-  { day: 'Do', readiness: 61, status: 'Belastung erhöht', note: 'Arbeitslast könnte Fokusfenster verkürzen.' },
-  { day: 'Fr', readiness: 72, status: 'Stabil', note: 'Solide kognitive Kapazität erwartet.' },
-  { day: 'Sa', readiness: 58, status: 'Regeneration', note: 'Niedrigere Leistungsanforderung sinnvoll.' },
-  { day: 'So', readiness: 67, status: 'Erholung steigend', note: 'Basis für bessere nächste Woche.' }
-]
-
 const chart = {
   left: 28,
   right: 304,
@@ -316,45 +269,45 @@ const chart = {
 const gridLevels = [0, 25, 50, 75, 100]
 
 const forecastWindows = computed(() => [
-  { label: 'Peak-Fokus', value: forecastSummary.peakWindow },
-  { label: 'Zweites Leistungsfenster', value: forecastSummary.secondaryWindow },
-  { label: 'Niedrige Leistungsfähigkeit', value: forecastSummary.lowReadinessWindow }
+  { label: 'Peak-Fokus', value: forecastSummary.value.peakWindow },
+  { label: 'Zweites Leistungsfenster', value: forecastSummary.value.secondaryWindow },
+  { label: 'Niedrige Leistungsfähigkeit', value: forecastSummary.value.lowReadinessWindow }
 ])
 
-const peakReadinessPoint = computed(() => readinessCurve.reduce((highest, point) => point.readiness > highest.readiness ? point : highest, readinessCurve[0]))
-const lowestReadinessPoint = computed(() => readinessCurve.reduce((lowest, point) => point.readiness < lowest.readiness ? point : lowest, readinessCurve[0]))
-const averageReadiness = computed(() => average(readinessCurve.map((point) => point.readiness)))
-const peakFocusBlocks = computed(() => readinessCurve.filter((point) => point.readiness >= 80))
-const lowReadinessBlocks = computed(() => readinessCurve.filter((point) => point.readiness < 50))
-const deepWorkBlocks = computed(() => readinessCurve.filter((point) => point.readiness >= 75))
-const routineBlocks = computed(() => readinessCurve.filter((point) => point.readiness >= 50 && point.readiness < 70))
-const recoveryBlocks = computed(() => readinessCurve.filter((point) => point.readiness < 50))
-const highestWeeklyDay = computed(() => weeklyOutlook.reduce((highest, day) => day.readiness > highest.readiness ? day : highest, weeklyOutlook[0]))
-const lowestWeeklyDay = computed(() => weeklyOutlook.reduce((lowest, day) => day.readiness < lowest.readiness ? day : lowest, weeklyOutlook[0]))
+const peakReadinessPoint = computed(() => readinessCurve.value.reduce((highest, point) => point.readiness > highest.readiness ? point : highest, readinessCurve.value[0]))
+const lowestReadinessPoint = computed(() => readinessCurve.value.reduce((lowest, point) => point.readiness < lowest.readiness ? point : lowest, readinessCurve.value[0]))
+const averageReadiness = computed(() => average(readinessCurve.value.map((point) => point.readiness)))
+const peakFocusBlocks = computed(() => readinessCurve.value.filter((point) => point.readiness >= 80))
+const lowReadinessBlocks = computed(() => readinessCurve.value.filter((point) => point.readiness < 50))
+const deepWorkBlocks = computed(() => readinessCurve.value.filter((point) => point.readiness >= 75))
+const routineBlocks = computed(() => readinessCurve.value.filter((point) => point.readiness >= 50 && point.readiness < 70))
+const recoveryBlocks = computed(() => readinessCurve.value.filter((point) => point.readiness < 50))
+const highestWeeklyDay = computed(() => weeklyOutlook.value.reduce((highest, day) => day.readiness > highest.readiness ? day : highest, weeklyOutlook.value[0]))
+const lowestWeeklyDay = computed(() => weeklyOutlook.value.reduce((lowest, day) => day.readiness < lowest.readiness ? day : lowest, weeklyOutlook.value[0]))
 
-const readinessPath = computed(() => readinessCurve
+const readinessPath = computed(() => readinessCurve.value
   .map((point, index) => `${index === 0 ? 'M' : 'L'} ${getX(index)} ${getY(point.readiness)}`)
   .join(' ')
 )
 
 const readinessAreaPath = computed(() => {
   const firstX = getX(0)
-  const lastX = getX(readinessCurve.length - 1)
+  const lastX = getX(readinessCurve.value.length - 1)
 
   return `${readinessPath.value} L ${lastX} ${chart.bottom} L ${firstX} ${chart.bottom} Z`
 })
 
 const importantPoints = computed(() => [
-  { ...peakReadinessPoint.value, index: readinessCurve.findIndex((point) => point.time === peakReadinessPoint.value.time) },
-  { ...readinessCurve[7], index: 7 },
-  { ...readinessCurve[9], index: 9 },
-  { ...readinessCurve[13], index: 13 }
+  { ...peakReadinessPoint.value, index: readinessCurve.value.findIndex((point) => point.time === peakReadinessPoint.value.time) },
+  { ...readinessCurve.value[7], index: 7 },
+  { ...readinessCurve.value[9], index: 9 },
+  { ...readinessCurve.value[13], index: 13 }
 ])
 
 const performanceZones = computed(() => [
   {
     title: 'Peak-Fokus',
-    time: forecastSummary.peakWindow,
+    time: forecastSummary.value.peakWindow,
     meaning: 'Höchste mentale Tiefe, starke Analysefähigkeit, gute Entscheidungsqualität.'
   },
   {
@@ -376,7 +329,7 @@ const performanceZones = computed(() => [
 
 function getX(index: number) {
   const width = chart.right - chart.left
-  return chart.left + (index / (readinessCurve.length - 1)) * width
+  return chart.left + (index / (readinessCurve.value.length - 1)) * width
 }
 
 function getY(readiness: number) {

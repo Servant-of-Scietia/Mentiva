@@ -133,7 +133,7 @@
 import { computed } from 'vue'
 import { useMentivaDemo } from '../../composables/useMentivaDemo'
 
-const { state } = useMentivaDemo()
+const { state, forecastSummary } = useMentivaDemo()
 
 const todayHealth = {
   date: '2026-06-22',
@@ -232,47 +232,10 @@ const warnings = computed(() => {
 })
 
 const readinessProjection = computed(() => {
-  if (
-    avgRecovery7d.value >= 75
-    && avgSleepScore7d.value >= 75
-    && avgStress7d.value < 60
-    && hrvTrendPercent.value >= -5
-  ) {
-    return {
-      status: 'Starke Erholung',
-      explanation: 'Erholung, Schlaf und Stressmuster deuten aktuell auf eine starke kognitive Kapazität hin.',
-      recommendation: 'Schütze deine wertvollsten Fokusfenster und halte deine Erholungsroutine stabil.'
-    }
-  }
-
-  if (
-    avgRecovery7d.value >= 65
-    && avgSleepScore7d.value >= 65
-    && avgWorkload7d.value < 75
-  ) {
-    return {
-      status: 'Ausgeglichen',
-      explanation: 'Belastung und Erholung sind in den letzten Tagen weitgehend im Gleichgewicht.',
-      recommendation: 'Nutze fokussierte Arbeit in klaren Blöcken und halte Pausen verlässlich ein.'
-    }
-  }
-
-  if (
-    avgRecovery7d.value < 50
-    || avgStress7d.value >= 75
-    || workloadRecoveryMismatch.value
-  ) {
-    return {
-      status: 'Hohe Belastung',
-      explanation: 'Die letzte Woche zeigt hohe Belastung, erhöhte Stresssignale und geringere Erholungskapazität.',
-      recommendation: 'Reduziere Deep-Work-Belastung und ergänze heute bewusste Erholungsphasen.'
-    }
-  }
-
   return {
-    status: 'Moderate Belastung',
-    explanation: 'Die Trenddaten zeigen etwas Erholungsdruck, aber keine durchgehend hohe Belastung.',
-    recommendation: 'Wähle anspruchsvolle Arbeit bewusst aus und halte leichtere Aufgaben für spätere Phasen.'
+    status: forecastSummary.value.status,
+    explanation: forecastSummary.value.mainInterpretation,
+    recommendation: forecastSummary.value.coreMessage
   }
 })
 

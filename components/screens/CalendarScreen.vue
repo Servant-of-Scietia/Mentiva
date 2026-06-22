@@ -287,21 +287,12 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { useMentivaDemo } from '../../composables/useMentivaDemo'
+import { useMentivaDemo, type EventType, type PlanEvent } from '../../composables/useMentivaDemo'
 
 type CalendarView = 'Tag' | 'Woche' | 'Monat'
-type EventType = 'deepwork' | 'meeting' | 'routine'
-type CalendarEvent = {
-  id: number
-  date: string
-  time: string
-  endTime: string
-  type: EventType
-  label: string
-  note: string
-}
+type CalendarEvent = PlanEvent
 
-const { state } = useMentivaDemo()
+const { state, addPlanEvent, getPlanEventsForDate, forecastSummary } = useMentivaDemo()
 
 const today = new Date()
 const views: CalendarView[] = ['Tag', 'Woche', 'Monat']
@@ -313,7 +304,6 @@ const selectedDate = ref(new Date())
 const showComposer = ref(false)
 const selectedEvent = ref<CalendarEvent | null>(null)
 const now = ref(new Date())
-const nextEventId = ref(100)
 
 const draft = reactive({
   label: '',
@@ -334,12 +324,10 @@ const calendars = reactive([
   { label: 'Routinen', type: 'routine' as EventType, enabled: true, activeClass: 'border-slate-500/70 bg-slate-600/50' }
 ])
 
-const events = ref<CalendarEvent[]>(createSeedEvents())
-
-const planningOverview = {
+const planningOverview = computed(() => ({
   title: 'Konkrete Umsetzung deiner Prognose',
-  text: 'Mentiva übersetzt Peak-Fokus, Routinefähigkeit und Regeneration in eine klare Tagesstruktur.'
-}
+  text: `Mentiva übersetzt ${forecastSummary.value.status}, Peak-Fokus und Kalenderlast in eine klare Tagesstruktur.`
+}))
 
 const selectedKey = computed(() => getDateKey(selectedDate.value))
 
@@ -452,44 +440,6 @@ watch(selectedDayEvents, (dayEvents) => {
   }
 }, { immediate: true })
 
-function createSeedEvents(): CalendarEvent[] {
-  const baseEvents = state.today.blocks.map((block, index) => ({
-    id: index + 1,
-    date: getDateKey(today),
-    time: block.time,
-    endTime: block.endTime,
-    type: block.type,
-    label: block.label,
-    note: getDefaultNote(block.type)
-  }))
-
-  return [
-    ...baseEvents,
-    createEvent(-2, '09:15', '10:45', 'deepwork', 'Konzept-Sprint', 'Mentiva blockt fruehe Energie fuer anspruchsvolle Planung.'),
-    createEvent(-2, '13:30', '14:15', 'meeting', 'Sync mit Design', 'Kurzer Abgleich zu offenen Entscheidungen.'),
-    createEvent(-1, '08:30', '09:00', 'routine', 'Planung & Inbox', 'Leichte Routine vor der ersten Fokusphase.'),
-    createEvent(-1, '10:00', '12:00', 'deepwork', 'Prototyp verfeinern', 'Geschuetzter Block fuer konzentrierte Produktarbeit.'),
-    createEvent(1, '09:30', '11:30', 'deepwork', 'Feature-Entwurf', 'Mentiva reserviert morgen den staerksten Fokusbereich.'),
-    createEvent(1, '15:00', '15:45', 'meeting', 'Review Call', 'Meeting liegt bewusst nach der Fokuszeit.'),
-    createEvent(2, '08:00', '08:45', 'routine', 'Wochenplanung', 'Ruhiger Start mit geringer kognitiver Last.'),
-    createEvent(2, '11:00', '12:30', 'deepwork', 'Analyse der Check-ins', 'Auswertung neuer Datenpunkte fuer bessere Vorschlaege.'),
-    createEvent(4, '14:00', '15:00', 'meeting', 'Stakeholder Update', 'Kommunikation in einem niedrigeren Energie-Fenster.'),
-    createEvent(5, '10:30', '12:00', 'deepwork', 'Strategie-Dokument', 'Laengerer Schreibblock mit wenig Kontextwechsel.')
-  ]
-}
-
-function createEvent(dayOffset: number, time: string, endTime: string, type: EventType, label: string, note: string): CalendarEvent {
-  return {
-    id: nextEventId.value++,
-    date: getDateKey(addDays(today, dayOffset)),
-    time,
-    endTime,
-    type,
-    label,
-    note
-  }
-}
-
 function toggleComposer() {
   showComposer.value = !showComposer.value
   draft.time = state.today.focusStart
@@ -503,17 +453,15 @@ function addEvent() {
     return
   }
 
-  const event: CalendarEvent = {
-    id: nextEventId.value++,
+  const event = addPlanEvent({
     date: selectedKey.value,
     time: draft.time,
     endTime: draft.endTime,
     type: draft.type,
     label,
     note: getDefaultNote(draft.type)
-  }
+  })
 
-  events.value = [...events.value, event]
   selectedEvent.value = event
   draft.label = ''
   showComposer.value = false
@@ -534,7 +482,7 @@ function moveSelectedDay(direction: number) {
 function getEventsForDate(date: Date) {
   const key = getDateKey(date)
 
-  return events.value.filter((event) => event.date === key)
+  return getPlanEventsForDate(key)
 }
 
 function getDaySummary(date: Date) {

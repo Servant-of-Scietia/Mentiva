@@ -8,7 +8,7 @@
       </div>
 
       <h1 class="text-3xl font-black leading-tight text-slate-100">Check-in</h1>
-      <p class="mt-2 text-sm leading-relaxed text-slate-400">5 kurze Fragen. Dauert weniger als 30 Sekunden.</p>
+      <p class="mt-2 text-sm leading-relaxed text-slate-400">6 kurze Fragen. Dauert weniger als 30 Sekunden.</p>
     </header>
 
     <Transition name="fade" mode="out-in">
@@ -65,6 +65,18 @@
           <p class="mt-3 text-xs font-bold text-slate-500">
             Kontext: {{ formattedContextAdjustment }}
           </p>
+        </section>
+
+        <section class="rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-md">
+          <label for="checkin-note" class="text-sm font-black text-slate-100">Was sollte Mentiva noch wissen?</label>
+          <textarea
+            id="checkin-note"
+            v-model="checkIn.note"
+            rows="3"
+            maxlength="180"
+            placeholder="Optional, z. B. schlechter Schlaf, wichtige Deadline, ruhiger Morgen..."
+            class="mt-3 w-full resize-none rounded-2xl border border-slate-800/70 bg-slate-950/45 px-4 py-3 text-sm font-medium leading-relaxed text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-400/50 focus:bg-slate-950/70"
+          ></textarea>
         </section>
 
         <section class="rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-md">
@@ -236,6 +248,7 @@ const summaryItems = computed(() => [
   { label: 'Stress', value: `${checkIn.stress}/10` },
   { label: 'Motivation', value: `${checkIn.motivation}/10` },
   { label: 'Kontext', value: checkIn.selectedTags.length ? `${checkIn.selectedTags.length} gewählt` : 'neutral' },
+  { label: 'Notiz', value: checkIn.note.trim() ? 'gespeichert' : 'leer' },
   { label: 'Aktueller Zustand', value: readinessLabel.value }
 ])
 

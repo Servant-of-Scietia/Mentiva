@@ -172,30 +172,21 @@
 import { computed } from 'vue'
 import { useMentivaDemo } from '../../composables/useMentivaDemo'
 
-const { state, hideOnboarding } = useMentivaDemo()
+const { state, hideOnboarding, forecastSummary, forecastCurve, planningStatus } = useMentivaDemo()
 
-// Mock dashboard data. Replace with summarized model output when real predictions exist.
-const todayOverview = {
-  status: 'Moderate Belastung',
-  statusDetail: 'starker Vormittag',
-  peakFocus: '09:20-11:45',
-  deepWorkCapacity: '2h 25m',
-  confidence: 82,
-  fatigueRisk: 'erhöht ab 16:30',
-  summary: 'Dein Peak-Fokus liegt voraussichtlich am Vormittag. Mentiva erwartet gute Spitzenleistung, aber eine frühere Ermüdung am späten Nachmittag.'
-}
+const miniCurveIndexes = [0, 2, 4, 6, 7, 9, 11, 12, 16]
 
-const miniReadinessCurve = [
-  { time: '06:00', readiness: 42, label: 'Start' },
-  { time: '08:00', readiness: 68, label: 'Fokus steigt' },
-  { time: '10:00', readiness: 91, label: 'Peak' },
-  { time: '12:00', readiness: 73, label: 'Abfall' },
-  { time: '13:00', readiness: 59, label: 'Mittagstief' },
-  { time: '15:00', readiness: 74, label: 'Zweites Fenster' },
-  { time: '17:00', readiness: 54, label: 'Ermüdung' },
-  { time: '18:00', readiness: 46, label: 'Regeneration' },
-  { time: '22:00', readiness: 28, label: 'Abschalten' }
-]
+const todayOverview = computed(() => ({
+  status: forecastSummary.value.status,
+  statusDetail: forecastSummary.value.peakWindow,
+  peakFocus: forecastSummary.value.peakWindow,
+  deepWorkCapacity: planningStatus.value.items.find((item) => item.startsWith('Fokus geplant'))?.replace('Fokus geplant: ', '') ?? 'offen',
+  confidence: forecastSummary.value.confidence,
+  fatigueRisk: forecastSummary.value.lowReadinessWindow,
+  summary: forecastSummary.value.mainInterpretation
+}))
+
+const miniReadinessCurve = computed(() => miniCurveIndexes.map((index) => forecastCurve.value[index]))
 
 const mainRecommendation = {
   title: 'Schütze dein Vormittagsfenster',
@@ -224,16 +215,6 @@ const keySignals = [
   }
 ]
 
-const planningStatus = {
-  count: 3,
-  title: 'Optimierungen erkannt',
-  items: [
-    'Peak-Fokus-Fenster verfügbar',
-    'Nachmittag weniger geeignet für hohe mentale Tiefe',
-    'Erholungsblock empfohlen'
-  ]
-}
-
 const chart = {
   left: 22,
   right: 304,
@@ -242,44 +223,44 @@ const chart = {
 }
 const gridLevels = [25, 50, 75, 100]
 
-const statusLine = computed(() => `${todayOverview.status} · ${todayOverview.statusDetail}`)
-const peakReadinessPoint = computed(() => miniReadinessCurve.reduce((highest, point) => point.readiness > highest.readiness ? point : highest, miniReadinessCurve[0]))
-const lowestReadinessPoint = computed(() => miniReadinessCurve.reduce((lowest, point) => point.readiness < lowest.readiness ? point : lowest, miniReadinessCurve[0]))
-const averageMiniReadiness = computed(() => average(miniReadinessCurve.map((point) => point.readiness)))
-const planningStatusLabel = computed(() => `${planningStatus.count} ${planningStatus.title}`)
+const statusLine = computed(() => `${todayOverview.value.status} · ${todayOverview.value.statusDetail}`)
+const peakReadinessPoint = computed(() => miniReadinessCurve.value.reduce((highest, point) => point.readiness > highest.readiness ? point : highest, miniReadinessCurve.value[0]))
+const lowestReadinessPoint = computed(() => miniReadinessCurve.value.reduce((lowest, point) => point.readiness < lowest.readiness ? point : lowest, miniReadinessCurve.value[0]))
+const averageMiniReadiness = computed(() => average(miniReadinessCurve.value.map((point) => point.readiness)))
+const planningStatusLabel = computed(() => `${planningStatus.value.count} ${planningStatus.value.title}`)
 
-const peakIndex = computed(() => miniReadinessCurve.findIndex((point) => point.time === peakReadinessPoint.value.time))
-const lowestIndex = computed(() => miniReadinessCurve.findIndex((point) => point.time === lowestReadinessPoint.value.time))
+const peakIndex = computed(() => miniReadinessCurve.value.findIndex((point) => point.time === peakReadinessPoint.value.time))
+const lowestIndex = computed(() => miniReadinessCurve.value.findIndex((point) => point.time === lowestReadinessPoint.value.time))
 
 const heroMetrics = computed(() => [
-  { label: 'Peak-Fokus', value: todayOverview.peakFocus },
-  { label: 'Deep-Work', value: todayOverview.deepWorkCapacity },
-  { label: 'Sicherheit', value: `${todayOverview.confidence}%` },
-  { label: 'Ermüdung', value: todayOverview.fatigueRisk }
+  { label: 'Peak-Fokus', value: todayOverview.value.peakFocus },
+  { label: 'Deep-Work', value: todayOverview.value.deepWorkCapacity },
+  { label: 'Sicherheit', value: `${todayOverview.value.confidence}%` },
+  { label: 'Ermüdung', value: todayOverview.value.fatigueRisk }
 ])
 
-const miniCurvePath = computed(() => miniReadinessCurve
+const miniCurvePath = computed(() => miniReadinessCurve.value
   .map((point, index) => `${index === 0 ? 'M' : 'L'} ${getX(index)} ${getY(point.readiness)}`)
   .join(' ')
 )
 
 const miniCurveAreaPath = computed(() => {
   const firstX = getX(0)
-  const lastX = getX(miniReadinessCurve.length - 1)
+  const lastX = getX(miniReadinessCurve.value.length - 1)
 
   return `${miniCurvePath.value} L ${lastX} ${chart.bottom} L ${firstX} ${chart.bottom} Z`
 })
 
 const curveLabels = computed(() => [
-  { title: 'Peak', value: todayOverview.peakFocus },
+  { title: 'Peak', value: todayOverview.value.peakFocus },
   { title: 'Mittagstief', value: '13:00' },
-  { title: 'Regeneration', value: 'ab 18:00' }
+  { title: 'Regeneration', value: todayOverview.value.fatigueRisk }
 ])
 
 function getX(index: number) {
   const width = chart.right - chart.left
 
-  return chart.left + (index / (miniReadinessCurve.length - 1)) * width
+  return chart.left + (index / (miniReadinessCurve.value.length - 1)) * width
 }
 
 function getY(readiness: number) {
