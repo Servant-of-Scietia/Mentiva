@@ -21,7 +21,7 @@ interface MentivaState {
     blocks: TimeBlock[]
   }
   weekTrend: TrendDay[]
-  checkins: Array<{ energy: number; sleep: number; timestamp: string }>
+  checkins: Array<{ readinessScore: number; baselineScore: number; timestamp: string }>
   showOnboarding: boolean
 }
 
@@ -61,14 +61,14 @@ export function useMentivaDemo() {
     console.log(`Navigating to ${screen} screen`)
   }
 
-  function addCheckin(energy: number, sleep: number) {
+  function addCheckin(readinessScore: number, baselineScore: number) {
     state.checkins.push({
-      energy,
-      sleep,
+      readinessScore,
+      baselineScore,
       timestamp: new Date().toISOString()
     })
     // Show success message
-    lastSuccessMessage.value = `Danke! Deine Vorhersage für morgen wird ${energy > 7 ? 'noch' : ''} genauer.`
+    lastSuccessMessage.value = `Danke! Deine Vorhersage für morgen wird ${readinessScore > 7 ? 'noch' : ''} genauer.`
     showSuccessMessage.value = true
     setTimeout(() => {
       showSuccessMessage.value = false

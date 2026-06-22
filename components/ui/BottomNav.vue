@@ -38,13 +38,13 @@
       <span class="text-[11px] font-medium">Prognose</span>
     </button>
 
-    <!-- Signals -->
+    <!-- Data -->
     <button
       @click="() => goTo('signals')"
       :class="navClass('signals')"
     >
       <span :class="iconClass('signals')">◌</span>
-      <span class="text-[11px] font-medium">Signals</span>
+      <span class="text-[11px] font-medium">Daten</span>
     </button>
 
   </div>

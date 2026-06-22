@@ -8,7 +8,7 @@
       </div>
 
       <h1 class="text-3xl font-black leading-tight text-slate-100">Check-in</h1>
-      <p class="mt-2 text-sm leading-relaxed text-slate-400">6 kurze Fragen. Dauert weniger als 30 Sekunden.</p>
+      <p class="mt-2 text-sm leading-relaxed text-slate-400">5 kurze Fragen. Dauert weniger als 30 Sekunden.</p>
     </header>
 
     <Transition name="fade" mode="out-in">
@@ -62,17 +62,9 @@
               {{ tag }}
             </button>
           </div>
-        </section>
-
-        <section class="rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-md">
-          <label for="checkin-note" class="text-sm font-black text-slate-100">Noch etwas?</label>
-          <textarea
-            id="checkin-note"
-            v-model="checkIn.note"
-            rows="3"
-            class="mt-3 max-h-24 w-full resize-none rounded-xl border border-slate-800/60 bg-slate-950/50 px-3 py-3 text-sm text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-amber-400"
-            placeholder="z. B. schlecht geschlafen, wichtige Deadline, sehr motiviert"
-          />
+          <p class="mt-3 text-xs font-bold text-slate-500">
+            Kontext: {{ formattedContextAdjustment }}
+          </p>
         </section>
 
         <section class="rounded-2xl border border-slate-800/60 bg-slate-900/50 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-md">
@@ -86,7 +78,7 @@
             </span>
           </div>
           <p class="mt-3 text-sm leading-relaxed text-slate-400">
-            Mentiva nutzt deine Angaben für die heutige Prognose.
+            Mentiva nutzt Slider und Kontext für die heutige Prognose.
           </p>
         </section>
 
@@ -180,14 +172,47 @@ const contextTags = [
   'Ungewöhnlicher Tag'
 ]
 
-const readinessScore = computed(() => (
-  checkIn.energy * 0.3
-  + checkIn.focus * 0.3
-  + checkIn.motivation * 0.25
-  + (11 - checkIn.stress) * 0.15
+const tagWeights: Record<string, number> = {
+  'Wenig Schlaf': -0.7,
+  'Viel zu tun': -0.4,
+  Zeitdruck: -0.5,
+  'Gute Laune': 0.5,
+  'Schlechte Laune': -0.5,
+  Müde: -0.6,
+  Unruhig: -0.5,
+  'Klarer Kopf': 0.6,
+  'Sport gemacht': 0.4,
+  Koffein: 0.3,
+  'Krank/angeschlagen': -0.8,
+  'Ungewöhnlicher Tag': -0.3
+}
+
+const maxContextAdjustment = 3
+
+const sliderScore = computed(() => (
+  normalizePositive(checkIn.energy) * 0.24
+  + normalizePositive(checkIn.focus) * 0.30
+  + normalizePositive(checkIn.motivation) * 0.24
+  + normalizeNegative(checkIn.stress) * 0.22
 ))
 
+const contextAdjustment = computed(() => clamp(
+  checkIn.selectedTags.reduce((total, tag) => total + (tagWeights[tag] ?? 0), 0),
+  -maxContextAdjustment,
+  maxContextAdjustment
+))
+
+const readinessScore = computed(() => clamp(sliderScore.value + contextAdjustment.value, 0, 10))
+
 const formattedReadinessScore = computed(() => readinessScore.value.toFixed(1))
+
+const formattedContextAdjustment = computed(() => {
+  if (contextAdjustment.value === 0) {
+    return 'neutral'
+  }
+
+  return `${contextAdjustment.value > 0 ? '+' : ''}${contextAdjustment.value.toFixed(1)}`
+})
 
 const readinessLabel = computed(() => {
   if (readinessScore.value >= 8) {
@@ -210,6 +235,7 @@ const summaryItems = computed(() => [
   { label: 'Fokus', value: `${checkIn.focus}/10` },
   { label: 'Stress', value: `${checkIn.stress}/10` },
   { label: 'Motivation', value: `${checkIn.motivation}/10` },
+  { label: 'Kontext', value: checkIn.selectedTags.length ? `${checkIn.selectedTags.length} gewählt` : 'neutral' },
   { label: 'Aktueller Zustand', value: readinessLabel.value }
 ])
 
@@ -227,8 +253,24 @@ function isTagSelected(tag: string) {
 }
 
 function handleSubmit() {
-  addCheckin(checkIn.energy, 11 - checkIn.stress)
+  addCheckin(roundToSingleDecimal(readinessScore.value), roundToSingleDecimal(sliderScore.value))
   checkIn.submitted = true
+}
+
+function roundToSingleDecimal(value: number) {
+  return Math.round(value * 10) / 10
+}
+
+function normalizePositive(value: number) {
+  return ((value - 1) / 9) * 10
+}
+
+function normalizeNegative(value: number) {
+  return ((10 - value) / 9) * 10
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max)
 }
 </script>
 
