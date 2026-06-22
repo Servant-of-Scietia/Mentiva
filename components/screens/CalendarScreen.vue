@@ -9,14 +9,15 @@
 
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="text-2xl font-black leading-tight text-slate-100">Kalender</h1>
+          <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Planung</p>
+          <h1 class="mt-2 text-2xl font-black leading-tight text-slate-100">Fokusplan</h1>
           <p class="mt-1 truncate text-sm text-slate-400">{{ selectedDayLabel }}</p>
         </div>
 
         <button
           type="button"
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-400 text-xl font-black text-slate-950 shadow-lg shadow-amber-500/20 transition active:scale-95"
-          aria-label="Termin hinzufuegen"
+          aria-label="Planungsblock hinzufuegen"
           @click="toggleComposer"
         >
           +
@@ -67,6 +68,30 @@
     </header>
 
     <main class="space-y-4 p-5">
+      <section class="rounded-2xl border border-amber-400/25 bg-slate-900/60 p-4 shadow-lg shadow-slate-950/25 backdrop-blur-md">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Planungsstatus</p>
+            <h2 class="mt-2 text-xl font-black text-slate-100">{{ planningOverview.title }}</h2>
+            <p class="mt-2 text-sm leading-relaxed text-slate-400">{{ planningOverview.text }}</p>
+          </div>
+          <span class="shrink-0 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-lg font-black text-amber-400">
+            {{ selectedDayEvents.length }}
+          </span>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <div
+            v-for="chip in planningChips"
+            :key="chip.label"
+            class="rounded-xl border border-slate-800/60 bg-slate-950/45 px-3 py-2"
+          >
+            <p class="text-[10px] font-bold uppercase text-slate-500">{{ chip.label }}</p>
+            <p class="mt-1 text-xs font-black text-slate-100">{{ chip.value }}</p>
+          </div>
+        </div>
+      </section>
+
       <section class="grid grid-cols-7 gap-1 rounded-2xl border border-slate-800/60 bg-slate-900/40 p-2 backdrop-blur-md">
         <button
           v-for="day in weekDays"
@@ -98,7 +123,7 @@
         >
           <div class="mb-4 flex items-center justify-between gap-3">
             <div class="min-w-0">
-              <h2 class="text-sm font-black text-slate-100">Neuer Termin</h2>
+              <h2 class="text-sm font-black text-slate-100">Neuer Planungsblock</h2>
               <p class="truncate text-xs text-slate-400">{{ selectedDayShort }}</p>
             </div>
             <button
@@ -148,7 +173,7 @@
               type="submit"
               class="w-full rounded-xl bg-amber-400 py-3 text-sm font-black text-slate-950 transition active:scale-[0.98]"
             >
-              Termin hinzufuegen
+              Block hinzufuegen
             </button>
           </form>
         </section>
@@ -160,7 +185,7 @@
       >
         <div class="mb-4 flex items-center justify-between">
           <h2 class="text-sm font-black text-slate-200">{{ monthLabel }}</h2>
-          <span class="text-xs font-bold text-amber-400">{{ selectedDayEvents.length }} Termine</span>
+          <span class="text-xs font-bold text-amber-400">{{ selectedDayEvents.length }} Blöcke</span>
         </div>
 
         <div class="mb-2 grid grid-cols-7 text-center text-[10px] font-bold uppercase text-slate-500">
@@ -196,7 +221,7 @@
       >
         <div class="mb-3 flex items-center justify-between">
           <h2 class="text-sm font-black text-slate-200">Wochenueberblick</h2>
-          <span class="text-xs font-bold text-slate-500">{{ weekEventCount }} Termine</span>
+          <span class="text-xs font-bold text-slate-500">{{ weekEventCount }} Blöcke</span>
         </div>
 
         <div class="space-y-2">
@@ -214,92 +239,18 @@
             </span>
             <span class="min-w-0 flex-1">
               <span class="block truncate text-sm font-bold text-slate-200">{{ getDaySummary(day.date) }}</span>
-              <span class="mt-0.5 block text-xs text-slate-500">{{ getEventsForDate(day.date).length }} Termine geplant</span>
+              <span class="mt-0.5 block text-xs text-slate-500">{{ getEventsForDate(day.date).length }} Planungsblöcke</span>
             </span>
           </button>
         </div>
       </section>
 
-      <section class="overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-900/40 backdrop-blur-md">
-        <div class="flex items-center justify-between border-b border-slate-800/60 px-4 py-3">
-          <div class="min-w-0">
-            <h2 class="truncate text-sm font-black text-slate-200">{{ selectedDayShort }}</h2>
-            <p class="text-xs text-slate-500">{{ selectedDayEvents.length }} Termine · {{ focusDuration }} Fokus</p>
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              v-for="calendar in calendars"
-              :key="calendar.label"
-              type="button"
-              class="h-8 w-8 rounded-xl border transition active:scale-95"
-              :class="calendar.enabled ? calendar.activeClass : 'border-slate-800 bg-slate-950/40 opacity-40'"
-              :aria-label="calendar.label"
-              @click="calendar.enabled = !calendar.enabled"
-            >
-              <span class="sr-only">{{ calendar.label }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="relative h-[520px] bg-slate-950/30">
-          <div class="absolute left-0 top-0 bottom-0 w-12 border-r border-slate-800/60 text-[10px] text-slate-600">
-            <div
-              v-for="hour in timelineHours"
-              :key="hour"
-              class="h-[52px] pr-1 pt-1 text-right"
-            >
-              {{ String(hour).padStart(2, '0') }}
-            </div>
-          </div>
-
-          <div class="absolute left-12 right-0 top-0 bottom-0">
-            <div
-              v-for="hour in timelineHours"
-              :key="hour"
-              class="h-[52px] border-b border-slate-800/50"
-            />
-
-            <div
-              v-if="isTodaySelected && nowPosition >= 0 && nowPosition <= 100"
-              class="absolute left-0 right-2 z-10 flex items-center"
-              :style="{ top: `${nowPosition}%` }"
-            >
-              <span class="-ml-1 h-2.5 w-2.5 rounded-full bg-amber-400" />
-              <span class="h-px flex-1 bg-amber-400" />
-            </div>
-
-            <button
-              v-for="(event, idx) in selectedDayEvents"
-              :key="event.id"
-              type="button"
-              class="absolute left-2 right-2 overflow-hidden rounded-xl border-l-4 px-3 py-2 text-left shadow-lg shadow-slate-950/20 transition active:scale-[0.99]"
-              :class="getEventStyle(event.type)"
-              :style="{
-                ...getEventPosition(event.time, event.endTime),
-                animation: 'eventIn 0.28s ease-out both',
-                animationDelay: `${idx * 45}ms`
-              }"
-              @click="selectedEvent = event"
-            >
-              <p class="truncate text-xs font-black">{{ event.label }}</p>
-              <p class="mt-0.5 text-[11px] opacity-75">{{ event.time }} - {{ event.endTime }}</p>
-            </button>
-
-            <div
-              v-if="selectedDayEvents.length === 0"
-              class="absolute inset-0 flex items-center justify-center px-8 text-center text-sm text-slate-500"
-            >
-              Keine Termine. Tippe auf +, um diesen Tag zu planen.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="rounded-2xl border border-slate-800/60 bg-slate-900/40 p-4 backdrop-blur-md">
+      <section 
+      v-else-if="activeView === 'Tag'"
+      class="rounded-2xl border border-slate-800/60 bg-slate-900/40 p-4 backdrop-blur-md">
         <div class="mb-3 flex items-center justify-between gap-3">
-          <h2 class="text-sm font-black text-slate-200">Agenda</h2>
-          <span class="truncate text-xs font-bold text-slate-500">{{ selectedEvent?.label || 'Kein Termin ausgewaehlt' }}</span>
+          <h2 class="text-sm font-black text-slate-200">Tagesstruktur</h2>
+          <span class="truncate text-xs font-bold text-slate-500">{{ selectedEvent?.label || 'Kein Block ausgewaehlt' }}</span>
         </div>
 
         <div v-if="selectedDayEvents.length" class="space-y-2">
@@ -385,6 +336,11 @@ const calendars = reactive([
 
 const events = ref<CalendarEvent[]>(createSeedEvents())
 
+const planningOverview = {
+  title: 'Konkrete Umsetzung deiner Prognose',
+  text: 'Mentiva übersetzt Peak-Fokus, Routinefähigkeit und Regeneration in eine klare Tagesstruktur.'
+}
+
 const selectedKey = computed(() => getDateKey(selectedDate.value))
 
 const selectedDayLabel = computed(() => selectedDate.value.toLocaleDateString('de-DE', {
@@ -466,6 +422,13 @@ const focusDuration = computed(() => {
 
   return hours > 0 ? `${hours} Std ${rest} Min` : `${rest} Min`
 })
+
+const planningChips = computed(() => [
+  { label: 'Peak-Fokus', value: state.today.focusStart + '-' + state.today.focusEnd },
+  { label: 'Fokus geplant', value: focusDuration.value },
+  { label: 'Belastung', value: getPlanningLoadLabel(selectedDayEvents.value.length) },
+  { label: 'Regeneration', value: 'ab 18:00 schuetzen' }
+])
 
 const isTodaySelected = computed(() => isSameDay(selectedDate.value, new Date()))
 
@@ -633,10 +596,22 @@ function getTypeLabel(type: EventType) {
 
 function getDefaultNote(type: EventType) {
   return {
-    deepwork: 'Dieser Termin liegt in einem Fokusfenster mit hoher mentaler Kapazitaet.',
-    meeting: 'Dieser Termin ist als Austausch geplant und vermeidet deine staerkste Deep-Work-Zeit.',
+    deepwork: 'Dieser Block liegt in einem Fokusfenster mit hoher mentaler Kapazitaet.',
+    meeting: 'Dieser Block ist als Austausch geplant und vermeidet deine staerkste Deep-Work-Zeit.',
     routine: 'Diese Aufgabe eignet sich fuer Zeiten mit niedrigerer kognitiver Last.'
   }[type]
+}
+
+function getPlanningLoadLabel(count: number) {
+  if (count >= 6) {
+    return 'hoch'
+  }
+
+  if (count >= 3) {
+    return 'balanciert'
+  }
+
+  return 'leicht'
 }
 
 function getDurationMinutes(startTime: string, endTime: string) {

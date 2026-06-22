@@ -1,62 +1,51 @@
 <template>
-  <div class="w-full border-t border-slate-800/60 bg-slate-950/80 backdrop-blur-xl flex justify-around items-center h-full rounded-t-3xl shadow-2xl">
+  <div class="flex h-full w-full items-center justify-around border-t border-slate-800/60 bg-slate-950/80 shadow-2xl backdrop-blur-xl">
 
-    <!-- Dashboard -->
+    <!-- Today -->
     <button
       @click="() => goTo('dashboard')"
       :class="navClass('dashboard')"
     >
-      <span class="text-2xl mb-1">🏠</span>
-      <span class="text-[11px] font-medium">Dashboard</span>
+      <span :class="iconClass('dashboard')">⌂</span>
+      <span class="text-[11px] font-medium">Heute</span>
     </button>
 
-    <!-- Calendar -->
+    <!-- Planning -->
     <button
       @click="() => goTo('calendar')"
       :class="navClass('calendar')"
     >
-      <span class="text-2xl mb-1">📅</span>
-      <span class="text-[11px] font-medium">Kalender</span>
+      <span :class="iconClass('calendar')">▦</span>
+      <span class="text-[11px] font-medium">Planung</span>
     </button>
 
     <!-- Check-in -->
     <button
-  @click="() => goTo('checkin')"
-  class="
-    flex flex-col items-center justify-center
-    w-16 h-16 -mt-8 rounded-full
-    relative transition
-    hover:scale-110 active:scale-95
-  "
->
-  <!-- glow layer -->
-  <div class="absolute inset-0 rounded-full bg-amber-400/20 blur-md"></div>
+      @click="() => goTo('checkin')"
+      class="relative -mt-7 flex h-16 w-16 flex-col items-center justify-center rounded-full transition hover:scale-105 active:scale-95"
+    >
+      <div class="absolute inset-1 rounded-full bg-amber-400/15 blur-md"></div>
+      <div class="absolute inset-1 rounded-full border border-amber-200/30 bg-amber-400 shadow-lg shadow-amber-500/20"></div>
+      <span class="relative text-3xl font-light leading-none text-slate-950">+</span>
+    </button>
 
-  <!-- main surface -->
-  <div class="
-    absolute inset-0 rounded-full
-    bg-gradient-to-br from-amber-300 to-amber-500
-    border border-amber-200/40
-    shadow-lg
-  "></div>
-
-  <!-- icon layer -->
-  <span class="relative text-slate-950 text-2xl font-black leading-none">
-    +
-  </span>
-</button>
-
-    <!-- Trends -->
+    <!-- Forecast -->
     <button
       @click="() => goTo('week')"
       :class="navClass('week')"
     >
-      <span class="text-2xl mb-1">📈</span>
-      <span class="text-[11px] font-medium">Trends</span>
+      <span :class="iconClass('week')">⌁</span>
+      <span class="text-[11px] font-medium">Prognose</span>
     </button>
 
-    <!-- spacer -->
-    <div class="flex-1"></div>
+    <!-- Signals -->
+    <button
+      @click="() => goTo('signals')"
+      :class="navClass('signals')"
+    >
+      <span :class="iconClass('signals')">◌</span>
+      <span class="text-[11px] font-medium">Signals</span>
+    </button>
 
   </div>
 </template>
@@ -71,13 +60,26 @@ const currentScreen = computed(() => state.currentScreen)
 
 function navClass(screen: string) {
   const base =
-    'flex flex-col items-center justify-center flex-1 h-full transition-all duration-200'
+    'flex flex-col items-center justify-center flex-1 h-full pt-1 transition-all duration-200'
 
   const inactive =
     'text-slate-500 hover:text-slate-300'
 
   const active =
     'text-amber-400 scale-105'
+
+  return `${base} ${currentScreen.value === screen ? active : inactive}`
+}
+
+function iconClass(screen: string) {
+  const base =
+    'mb-1 flex h-7 w-7 items-center justify-center text-2xl font-light leading-none transition-all duration-200'
+
+  const inactive =
+    'text-slate-500'
+
+  const active =
+    'text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.18)]'
 
   return `${base} ${currentScreen.value === screen ? active : inactive}`
 }

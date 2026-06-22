@@ -14,14 +14,12 @@
             <CheckinScreen v-else-if="state.currentScreen === 'checkin'" key="checkin" />
             <WeekTrendScreen v-else-if="state.currentScreen === 'week'" key="week" />
             <CalendarScreen v-else-if="state.currentScreen === 'calendar'" key="calendar" />
+            <HealthSignalsScreen v-else-if="state.currentScreen === 'signals'" key="signals" />
           </Transition>
         </div>
 
-        <!-- Bottom Navigation (always visible except on checkin screen) -->
-        <div
-          v-if="state.currentScreen !== 'checkin'"
-          class="relative h-20"
-        >
+        <!-- Bottom Navigation -->
+        <div class="relative h-20">
           <BottomNav />
         </div>
       </div>
@@ -35,6 +33,7 @@ import DashboardScreen from './components/screens/DashboardScreen.vue'
 import CheckinScreen from './components/screens/CheckinScreen.vue'
 import WeekTrendScreen from './components/screens/WeekTrendScreen.vue'
 import CalendarScreen from './components/screens/CalendarScreen.vue'
+import HealthSignalsScreen from './components/screens/HealthSignalsScreen.vue'
 import BottomNav from './components/ui/BottomNav.vue'
 
 const { state } = useMentivaDemo()

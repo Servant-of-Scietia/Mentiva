@@ -14,7 +14,7 @@ interface TrendDay {
 }
 
 interface MentivaState {
-  currentScreen: 'dashboard' | 'checkin' | 'week' | 'calendar'
+  currentScreen: 'dashboard' | 'checkin' | 'week' | 'calendar' | 'signals'
   today: {
     focusStart: string
     focusEnd: string
@@ -56,7 +56,7 @@ let lastSuccessMessage = ref('')
 let showSuccessMessage = ref(false)
 
 export function useMentivaDemo() {
-  function goTo(screen: 'dashboard' | 'checkin' | 'week' | 'calendar') {
+  function goTo(screen: 'dashboard' | 'checkin' | 'week' | 'calendar' | 'signals') {
     state.currentScreen = screen
     console.log(`Navigating to ${screen} screen`)
   }
