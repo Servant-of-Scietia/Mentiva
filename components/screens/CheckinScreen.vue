@@ -1,11 +1,7 @@
 <template>
   <div class="h-full overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-5 pb-24 text-slate-100">
     <header class="mb-5">
-      <div class="mb-4 flex items-center gap-3">
-        <div class="text-2xl font-black text-slate-100">M</div>
-        <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Mentiva</p>
-        <div class="ml-2 h-px flex-1 bg-gradient-to-r from-amber-500/60 to-transparent"></div>
-      </div>
+      <AppBrand class="mb-4" />
 
       <h1 class="text-3xl font-black leading-tight text-slate-100">Check-in</h1>
       <p class="mt-2 text-sm leading-relaxed text-slate-400">6 kurze Fragen. Dauert weniger als 30 Sekunden.</p>

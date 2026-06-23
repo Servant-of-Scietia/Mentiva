@@ -11,11 +11,7 @@
     </Transition>
 
     <header class="sticky top-0 z-20 border-b border-slate-800/60 bg-slate-950/85 p-5 backdrop-blur-md">
-      <div class="mb-4 flex items-center gap-3">
-        <div class="text-2xl font-black text-slate-100">M</div>
-        <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Mentiva</p>
-        <div class="ml-2 h-px flex-1 bg-gradient-to-r from-amber-500/60 to-transparent"></div>
-      </div>
+      <AppBrand class="mb-4" />
 
       <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Heute</p>
       <h1 class="mt-2 text-2xl font-black leading-tight text-slate-100">Dein Tag</h1>

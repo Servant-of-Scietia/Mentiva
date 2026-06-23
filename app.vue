@@ -1,5 +1,5 @@
 <template>
-<div class="flex items-center justify-center min-h-screen">
+<div class="flex min-h-screen items-center justify-center">
     <!-- Outer phone bezel -->
     <div class="bg-black p-3 rounded-[48px] shadow-2xl" style="width: 414px; height: 870px">
       <!-- Inner screen -->

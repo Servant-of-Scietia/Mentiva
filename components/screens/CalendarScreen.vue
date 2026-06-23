@@ -1,11 +1,7 @@
 <template>
   <div class="h-full overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24 text-slate-100">
     <header class="sticky top-0 z-20 border-b border-slate-800/60 bg-slate-950/85 p-5 backdrop-blur-md">
-      <div class="mb-4 flex items-center gap-3">
-        <div class="text-2xl font-black text-slate-100">M</div>
-        <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Mentiva</p>
-        <div class="ml-2 h-px flex-1 bg-gradient-to-r from-amber-500/60 to-transparent"></div>
-      </div>
+      <AppBrand class="mb-4" />
 
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">

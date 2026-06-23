@@ -2,11 +2,7 @@
   <div class="h-full overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pb-24 text-slate-100">
     <div class="px-5 py-5">
       <header class="mb-5">
-        <div class="mb-4 flex items-center gap-3">
-          <div class="text-2xl font-black text-slate-100">M</div>
-          <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Mentiva</p>
-          <div class="ml-2 h-px flex-1 bg-gradient-to-r from-amber-500/60 to-transparent"></div>
-        </div>
+        <AppBrand class="mb-4" />
 
         <p class="text-xs font-bold uppercase tracking-widest text-amber-400">Datenbasis</p>
         <h1 class="mt-2 text-2xl font-black leading-tight text-slate-100">Datenbasis</h1>
@@ -114,7 +110,7 @@
         <h2 class="text-lg font-black text-slate-100">Datenquellen</h2>
         <div class="mt-4 flex flex-wrap gap-2">
           <span
-            v-for="source in todayHealth.dataSources"
+            v-for="source in dataSources"
             :key="source"
             class="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 text-xs font-bold text-amber-300"
           >
@@ -133,54 +129,28 @@
 import { computed } from 'vue'
 import { useMentivaDemo } from '../../composables/useMentivaDemo'
 
-const { state, forecastSummary } = useMentivaDemo()
+const {
+  forecastSummary,
+  healthAverages,
+  latestCheckin,
+  previous7HealthDays,
+  todayHealth
+} = useMentivaDemo()
 
-const todayHealth = {
-  date: '2026-06-22',
-  sleepScore: 62,
-  sleepDuration: 5.8,
-  hrv: 42,
-  restingHeartRate: 58,
-  stressLevel: 74,
-  workload: 82,
-  recoveryScore: 54,
-  steps: 8420,
-  dataSources: ['Apple Health', 'Garmin', 'Smartphone-Sensoren', 'Check-in']
-}
+const dataSources = ['Apple Health', 'Garmin', 'Smartphone-Sensoren', 'Check-in']
 
-const healthHistory = [
-  { date: '2026-06-09', sleepScore: 76, sleepDuration: 7.4, hrv: 61, restingHeartRate: 51, stressLevel: 42, workload: 58, recoveryScore: 74, steps: 10840 },
-  { date: '2026-06-10', sleepScore: 72, sleepDuration: 7.1, hrv: 58, restingHeartRate: 52, stressLevel: 48, workload: 61, recoveryScore: 70, steps: 9360 },
-  { date: '2026-06-11', sleepScore: 69, sleepDuration: 6.6, hrv: 55, restingHeartRate: 53, stressLevel: 55, workload: 68, recoveryScore: 66, steps: 8120 },
-  { date: '2026-06-12', sleepScore: 71, sleepDuration: 6.9, hrv: 57, restingHeartRate: 52, stressLevel: 52, workload: 64, recoveryScore: 68, steps: 9870 },
-  { date: '2026-06-13', sleepScore: 67, sleepDuration: 6.4, hrv: 53, restingHeartRate: 54, stressLevel: 61, workload: 72, recoveryScore: 62, steps: 7650 },
-  { date: '2026-06-14', sleepScore: 64, sleepDuration: 6.1, hrv: 50, restingHeartRate: 55, stressLevel: 66, workload: 76, recoveryScore: 59, steps: 6840 },
-  { date: '2026-06-15', sleepScore: 66, sleepDuration: 6.3, hrv: 51, restingHeartRate: 55, stressLevel: 63, workload: 74, recoveryScore: 60, steps: 7930 },
-  { date: '2026-06-16', sleepScore: 61, sleepDuration: 5.9, hrv: 47, restingHeartRate: 57, stressLevel: 72, workload: 81, recoveryScore: 55, steps: 7210 },
-  { date: '2026-06-17', sleepScore: 59, sleepDuration: 5.6, hrv: 45, restingHeartRate: 58, stressLevel: 76, workload: 84, recoveryScore: 52, steps: 6490 },
-  { date: '2026-06-18', sleepScore: 63, sleepDuration: 6.0, hrv: 46, restingHeartRate: 57, stressLevel: 73, workload: 79, recoveryScore: 54, steps: 8740 },
-  { date: '2026-06-19', sleepScore: 60, sleepDuration: 5.7, hrv: 43, restingHeartRate: 59, stressLevel: 78, workload: 86, recoveryScore: 50, steps: 5980 },
-  { date: '2026-06-20', sleepScore: 58, sleepDuration: 5.5, hrv: 42, restingHeartRate: 60, stressLevel: 80, workload: 88, recoveryScore: 48, steps: 5340 },
-  { date: '2026-06-21', sleepScore: 65, sleepDuration: 6.2, hrv: 44, restingHeartRate: 58, stressLevel: 71, workload: 77, recoveryScore: 56, steps: 9270 },
-  { date: '2026-06-22', sleepScore: 62, sleepDuration: 5.8, hrv: 42, restingHeartRate: 58, stressLevel: 74, workload: 82, recoveryScore: 54, steps: 8420 }
-]
-
-const last7Days = computed(() => healthHistory.slice(-7))
-const previous7Days = computed(() => healthHistory.slice(-14, -7))
-
-const avgSleepScore7d = computed(() => average(last7Days.value.map((day) => day.sleepScore)))
-const avgSleepDuration7d = computed(() => average(last7Days.value.map((day) => day.sleepDuration)))
-const avgHrv7d = computed(() => average(last7Days.value.map((day) => day.hrv)))
-const avgHrvPrevious7d = computed(() => average(previous7Days.value.map((day) => day.hrv)))
+const avgSleepScore7d = computed(() => healthAverages.value.sleepScore)
+const avgSleepDuration7d = computed(() => healthAverages.value.sleepDuration)
+const avgHrv7d = computed(() => healthAverages.value.hrv)
+const avgHrvPrevious7d = computed(() => healthAverages.value.hrvPrevious)
 const hrvTrendPercent = computed(() => percentageChange(avgHrv7d.value, avgHrvPrevious7d.value))
-const avgStress7d = computed(() => average(last7Days.value.map((day) => day.stressLevel)))
-const avgWorkload7d = computed(() => average(last7Days.value.map((day) => day.workload)))
-const avgRecovery7d = computed(() => average(last7Days.value.map((day) => day.recoveryScore)))
-const avgRestingHeartRate7d = computed(() => average(last7Days.value.map((day) => day.restingHeartRate)))
-const avgSteps7d = computed(() => average(last7Days.value.map((day) => day.steps)))
-const highWorkloadDays7d = computed(() => last7Days.value.filter((day) => day.workload >= 75).length)
+const avgStress7d = computed(() => healthAverages.value.stress)
+const avgWorkload7d = computed(() => healthAverages.value.workload)
+const avgRecovery7d = computed(() => healthAverages.value.recovery)
+const avgRestingHeartRate7d = computed(() => healthAverages.value.restingHeartRate)
+const avgSteps7d = computed(() => healthAverages.value.steps)
+const highWorkloadDays7d = computed(() => healthAverages.value.highWorkloadDays)
 const workloadRecoveryMismatch = computed(() => avgWorkload7d.value > 70 && avgRecovery7d.value < 60)
-const latestCheckin = computed(() => state.checkins.slice(-1)[0] ?? null)
 const latestCheckinScore = computed(() => latestCheckin.value ? latestCheckin.value.readinessScore.toFixed(1) : '--')
 const checkinInsight = computed(() => {
   if (!latestCheckin.value) {
@@ -249,56 +219,56 @@ const trendBadges = computed(() => [
 const metricCards = computed(() => [
   {
     label: 'Schlafscore',
-    value: `${todayHealth.sleepScore}`,
+    value: `${todayHealth.value.sleepScore}`,
     detail: `7-Tage-Schnitt ${formatNumber(avgSleepScore7d.value)}`,
     source: 'Erholung',
     badgeClass: 'bg-amber-400/10 text-amber-300'
   },
   {
     label: 'HRV',
-    value: `${todayHealth.hrv} ms`,
+    value: `${todayHealth.value.hrv} ms`,
     detail: `${formatSigned(hrvTrendPercent.value)}% zur Vorwoche`,
     source: 'Wearable',
     badgeClass: 'bg-cyan-400/10 text-cyan-300'
   },
   {
     label: 'Erholungsscore',
-    value: `${todayHealth.recoveryScore}`,
+    value: `${todayHealth.value.recoveryScore}`,
     detail: `7-Tage-Schnitt ${formatNumber(avgRecovery7d.value)}`,
     source: 'Kapazität',
     badgeClass: 'bg-emerald-400/10 text-emerald-300'
   },
   {
     label: 'Stresslevel',
-    value: `${todayHealth.stressLevel}`,
+    value: `${todayHealth.value.stressLevel}`,
     detail: `7-Tage-Schnitt ${formatNumber(avgStress7d.value)}`,
     source: 'Muster',
     badgeClass: 'bg-amber-400/10 text-amber-300'
   },
   {
     label: 'Belastung',
-    value: `${todayHealth.workload}`,
+    value: `${todayHealth.value.workload}`,
     detail: `7-Tage-Schnitt ${formatNumber(avgWorkload7d.value)}`,
     source: 'Planung',
     badgeClass: 'bg-slate-700 text-slate-200'
   },
   {
     label: 'Ruhepuls',
-    value: `${todayHealth.restingHeartRate} bpm`,
+    value: `${todayHealth.value.restingHeartRate} bpm`,
     detail: `7-Tage-Schnitt ${formatNumber(avgRestingHeartRate7d.value)} bpm`,
     source: 'Wearable',
     badgeClass: 'bg-cyan-400/10 text-cyan-300'
   },
   {
     label: 'Schlafdauer',
-    value: `${todayHealth.sleepDuration} h`,
+    value: `${todayHealth.value.sleepDuration} h`,
     detail: `7-Tage-Schnitt ${formatNumber(avgSleepDuration7d.value)} h`,
     source: 'Erholung',
     badgeClass: 'bg-amber-400/10 text-amber-300'
   },
   {
     label: 'Schritte',
-    value: todayHealth.steps.toLocaleString('de-DE'),
+    value: todayHealth.value.steps.toLocaleString('de-DE'),
     detail: `7-Tage-Schnitt ${formatNumber(avgSteps7d.value)}`,
     source: 'Smartphone',
     badgeClass: 'bg-slate-700 text-slate-200'
@@ -307,11 +277,11 @@ const metricCards = computed(() => [
 
 const trendRows = computed(() => {
   const rows = [
-    createTrendRow('Schlafscore', average(previous7Days.value.map((day) => day.sleepScore)), avgSleepScore7d.value),
+    createTrendRow('Schlafscore', average(previous7HealthDays.value.map((day) => day.sleepScore)), avgSleepScore7d.value),
     createTrendRow('HRV', avgHrvPrevious7d.value, avgHrv7d.value, ' ms'),
-    createTrendRow('Stress', average(previous7Days.value.map((day) => day.stressLevel)), avgStress7d.value),
-    createTrendRow('Belastung', average(previous7Days.value.map((day) => day.workload)), avgWorkload7d.value),
-    createTrendRow('Erholung', average(previous7Days.value.map((day) => day.recoveryScore)), avgRecovery7d.value)
+    createTrendRow('Stress', average(previous7HealthDays.value.map((day) => day.stressLevel)), avgStress7d.value),
+    createTrendRow('Belastung', average(previous7HealthDays.value.map((day) => day.workload)), avgWorkload7d.value),
+    createTrendRow('Erholung', average(previous7HealthDays.value.map((day) => day.recoveryScore)), avgRecovery7d.value)
   ]
 
   return rows

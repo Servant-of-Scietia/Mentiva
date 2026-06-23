@@ -8,6 +8,7 @@ interface TimeBlock {
 }
 
 export type EventType = 'deepwork' | 'meeting' | 'routine'
+export type ScreenId = 'dashboard' | 'checkin' | 'week' | 'calendar' | 'signals'
 
 export interface PlanEvent {
   id: number
@@ -46,7 +47,7 @@ export interface CurvePoint {
 }
 
 interface MentivaState {
-  currentScreen: 'dashboard' | 'checkin' | 'week' | 'calendar' | 'signals'
+  currentScreen: ScreenId
   today: {
     focusStart: string
     focusEnd: string
@@ -245,7 +246,7 @@ export function useMentivaDemo() {
     }
   })
 
-  function goTo(screen: 'dashboard' | 'checkin' | 'week' | 'calendar' | 'signals') {
+  function goTo(screen: ScreenId) {
     state.currentScreen = screen
     console.log(`Navigating to ${screen} screen`)
   }
