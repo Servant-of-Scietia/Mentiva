@@ -7,6 +7,8 @@
         class="w-full h-full rounded-[40px] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col relative"
         style="width: 390px; height: 844px"
       >
+        <MentivaLogoSplash />
+
         <!-- Screen content with transition -->
         <div class="flex-1 relative overflow-hidden">
           <Transition name="fade" mode="out-in">
@@ -35,6 +37,7 @@ import WeekTrendScreen from './components/screens/WeekTrendScreen.vue'
 import CalendarScreen from './components/screens/CalendarScreen.vue'
 import HealthSignalsScreen from './components/screens/HealthSignalsScreen.vue'
 import BottomNav from './components/ui/BottomNav.vue'
+import MentivaLogoSplash from './components/MentivaLogoSplash.vue'
 
 const { state } = useMentivaDemo()
 </script>

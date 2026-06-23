@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 z-50 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center" 
+  <div class="absolute inset-0 z-50 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center"
        :class="{ 'opacity-0 pointer-events-none': !showSplash }"
        style="transition: opacity 0.6s ease-out 0.8s;">
     <div class="flex flex-col items-center justify-center gap-8">
