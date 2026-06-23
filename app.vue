@@ -12,11 +12,7 @@
         <!-- Screen content with transition -->
         <div class="flex-1 relative overflow-hidden">
           <Transition name="fade" mode="out-in">
-            <DashboardScreen v-if="state.currentScreen === 'dashboard'" key="dashboard" />
-            <CheckinScreen v-else-if="state.currentScreen === 'checkin'" key="checkin" />
-            <WeekTrendScreen v-else-if="state.currentScreen === 'week'" key="week" />
-            <CalendarScreen v-else-if="state.currentScreen === 'calendar'" key="calendar" />
-            <HealthSignalsScreen v-else-if="state.currentScreen === 'signals'" key="signals" />
+            <component :is="currentScreenComponent" :key="state.currentScreen" />
           </Transition>
         </div>
 
@@ -30,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useMentivaDemo } from './composables/useMentivaDemo'
 import DashboardScreen from './components/screens/DashboardScreen.vue'
 import CheckinScreen from './components/screens/CheckinScreen.vue'
@@ -40,6 +37,16 @@ import BottomNav from './components/ui/BottomNav.vue'
 import MentivaLogoSplash from './components/MentivaLogoSplash.vue'
 
 const { state } = useMentivaDemo()
+
+const screenComponents = {
+  dashboard: DashboardScreen,
+  checkin: CheckinScreen,
+  week: WeekTrendScreen,
+  calendar: CalendarScreen,
+  signals: HealthSignalsScreen
+}
+
+const currentScreenComponent = computed(() => screenComponents[state.currentScreen] ?? DashboardScreen)
 </script>
 
 <style scoped>

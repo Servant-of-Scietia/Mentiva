@@ -128,6 +128,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMentivaDemo } from '../../composables/useMentivaDemo'
+import AppBrand from '../ui/AppBrand.vue'
 
 const {
   forecastSummary,

@@ -284,6 +284,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useMentivaDemo, type EventType, type PlanEvent } from '../../composables/useMentivaDemo'
+import AppBrand from '../ui/AppBrand.vue'
 
 type CalendarView = 'Tag' | 'Woche' | 'Monat'
 type CalendarEvent = PlanEvent

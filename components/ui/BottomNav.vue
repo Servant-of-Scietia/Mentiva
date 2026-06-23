@@ -3,6 +3,7 @@
 
     <!-- Today -->
     <button
+      type="button"
       @click="() => goTo('dashboard')"
       :class="navClass('dashboard')"
     >
@@ -12,6 +13,7 @@
 
     <!-- Planning -->
     <button
+      type="button"
       @click="() => goTo('calendar')"
       :class="navClass('calendar')"
     >
@@ -21,6 +23,7 @@
 
     <!-- Check-in -->
     <button
+      type="button"
       @click="() => goTo('checkin')"
       class="relative -mt-7 flex h-16 w-16 flex-col items-center justify-center rounded-full transition hover:scale-105 active:scale-95"
     >
@@ -31,6 +34,7 @@
 
     <!-- Forecast -->
     <button
+      type="button"
       @click="() => goTo('week')"
       :class="navClass('week')"
     >
@@ -40,6 +44,7 @@
 
     <!-- Data -->
     <button
+      type="button"
       @click="() => goTo('signals')"
       :class="navClass('signals')"
     >

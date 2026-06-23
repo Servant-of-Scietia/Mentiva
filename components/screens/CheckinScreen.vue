@@ -135,6 +135,7 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
 import { useMentivaDemo } from '../../composables/useMentivaDemo'
+import AppBrand from '../ui/AppBrand.vue'
 
 type SliderKey = 'energy' | 'focus' | 'stress' | 'motivation'
 
